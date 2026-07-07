@@ -1,0 +1,60 @@
+{
+  "description": "Starter keyword set for broad routing/collection only — NOT the detection mechanism. Actual hate-speech determination should come from the toxicity classifier (Phase 2 / Perspective API), not string matching. Review and expand this list periodically using ADL's Glossary of Extremism (https://www.adl.org/resources/glossary-terms) and Hate Symbols Database (https://www.adl.org/hate-symbols), which are actively maintained by researchers. This starter list is intentionally modest, not exhaustive.",
+  "sets": [
+    {
+      "id": "antisemitism-related",
+      "label": "Antisemitism-related terms (broad collection net)",
+      "keywords": [
+        "jews control the world",
+        "jews control media",
+        "jewish conspiracy",
+        "zionist plot",
+        "zog",
+        "jews control banks",
+        "globalist elite",
+        "global jewish conspiracy",
+        "holocaust hoax",
+        "holohoax",
+        "jewish control",
+        "zionist occupied government",
+        "rothschild control",
+        "dual loyalty jews",
+        "six million lie",
+        "israel controls america",
+        "zionist media",
+        "zionist propaganda",
+        "zionist terrorism",
+        "zionist occupation",
+        "zionist colonizer",
+        "zionist supremacist",
+        "zionist genocide",
+        "israel behind every war",
+        "zionist dictator",
+        "jews control weather"
+      ]
+    },
+    {
+      "id": "anti-india-propaganda",
+      "label": "Anti-India propaganda terms (broad collection net)",
+      "keywords": [
+        "india is dirty",
+        "filthy india",
+        "india failed state",
+        "hindu terror",
+        "hindutva fascist",
+        "india smells",
+        "india full of garbage",
+        "modi dictator",
+        "india fake democracy",
+        "india unhygienic",
+        "curry people",
+        "pajeet",
+        "scam call center country",
+        "indian scammer",
+        "hindu nazi",
+        "hindu genocide supporters",
+        "indian occupied kashmir"
+      ]
+    }
+  ]
+}

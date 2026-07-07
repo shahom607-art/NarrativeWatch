@@ -1,0 +1,20 @@
+{
+  "name": "narrativewatch",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,worker,web -c blue,green,magenta \"npm run dev -w @narrativewatch/api\" \"npm run dev -w @narrativewatch/worker\" \"npm run dev -w @narrativewatch/web\"",
+    "db:generate": "npm run generate -w @narrativewatch/database",
+    "db:migrate": "npm run migrate -w @narrativewatch/database",
+    "db:push": "npm run push -w @narrativewatch/database",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}

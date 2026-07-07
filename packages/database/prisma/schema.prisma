@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(cuid())
+  email           String           @unique
+  passwordHash    String?
+  createdAt       DateTime         @default(now())
+  savedSearches   SavedSearch[]
+  trackedAccounts TrackedAccount[]
+  reportLogs      ReportLog[]
+}
+
+model SavedSearch {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String
+  keywords  String[]
+  createdAt DateTime @default(now())
+}
+
+model TrackedAccount {
+  id      String   @id @default(cuid())
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  handle  String
+  addedAt DateTime @default(now())
+
+  @@unique([userId, handle])
+}
+
+model SourcePost {
+  id             String          @id @default(cuid())
+  platform       String
+  externalId     String          @unique
+  authorHandle   String
+  authorId       String
+  content        String
+  postedAt       DateTime
+  ingestedAt     DateTime        @default(now())
+  keywordMatched String
+  toxicityScore  Float?
+  botScore       Float?
+  botScoreBreakdown Json?
+  clusterId      String?
+  cluster        PatternCluster? @relation(fields: [clusterId], references: [id])
+
+  @@index([keywordMatched])
+  @@index([postedAt])
+  @@index([authorId])
+  @@index([clusterId])
+  @@index([botScore])
+}
+
+model PatternCluster {
+  id        String       @id @default(cuid())
+  label     String
+  narrative String
+  firstSeen DateTime
+  lastSeen  DateTime
+  postCount Int          @default(0)
+  posts     SourcePost[]
+}
+
+model ReportLog {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId     String
+  reportedAt DateTime @default(now())
+  channel    String
+}

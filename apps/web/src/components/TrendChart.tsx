@@ -26,8 +26,16 @@ export function TrendChart({ posts, keywords, windowHours }: TrendChartProps) {
     [posts, keywords, windowHours],
   );
 
-  const chartKey = useMemo(() => `${totalVolume(data, keywords)}-${data.length}`, [data, keywords]);
-
+  const activeKeywords = useMemo(
+    () => keywords.filter((kw) => posts.some((p) => p.keywordMatched === kw)),
+    [keywords, posts],
+  );
+  
+  const chartKey = useMemo(
+    () => `${totalVolume(data, activeKeywords)}-${data.length}`,
+    [data, activeKeywords],
+  );
+  
   const colors = ["#3b82f6", "#f59e0b", "#10b981", "#ef4444", "#a855f7"];
 
   const formatAxisTick = (unixSeconds: number) => {
@@ -59,7 +67,7 @@ export function TrendChart({ posts, keywords, windowHours }: TrendChartProps) {
             labelFormatter={(v) => new Date(Number(v) * 1000).toLocaleString()}
           />
           <Legend />
-          {keywords.map((kw, i) => (
+          {activeKeywords.map((kw, i) => (
             <Line
               key={kw}
               type="monotone"

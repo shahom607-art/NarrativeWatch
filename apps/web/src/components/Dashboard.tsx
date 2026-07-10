@@ -27,7 +27,7 @@ export function Dashboard() {
   useEffect(() => {
     getIngestionKeywords()
       .then((res) => {
-        if (res.keywords.length > 0) setChartKeywords(res.keywords.slice(0, 8));
+        if (res.keywords.length > 0) setChartKeywords(res.keywords);
       })
       .catch(() => {
         // keep fallback

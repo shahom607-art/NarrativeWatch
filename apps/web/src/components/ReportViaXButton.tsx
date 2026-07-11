@@ -30,7 +30,7 @@ export function ReportViaXButton({ post }: { post: SourcePostDTO }) {
   if (post.platform !== "x") {
     return (
       <p className="text-xs text-gray-500">
-        Read-only ingestion — no automated report actions for {post.platform} posts.
+        Read-only data: automated reporting is not supported for {post.platform} posts.
       </p>
     );
   }

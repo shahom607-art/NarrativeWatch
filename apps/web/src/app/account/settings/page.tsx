@@ -108,7 +108,7 @@ export default function SettingsPage() {
               className="flex items-center justify-between rounded border border-border bg-card px-3 py-2 text-sm"
             >
               <span>
-                <strong>{s.label}</strong> — {s.keywords.join(", ")}
+                <strong>{s.label}</strong>: {s.keywords.join(", ")}
               </span>
               <button onClick={() => deleteSearch(s.id)} className="text-red-400 hover:underline">
                 Delete
@@ -152,7 +152,7 @@ export default function SettingsPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Report history</h2>
         <p className="text-xs text-gray-500">
-          Logs when you clicked through to X&apos;s official report flow — NarrativeWatch does not
+          Logs showing when you visited the report form on Bluesky. Note that NarrativeWatch does not
           report on your behalf.
         </p>
         <ul className="space-y-2">

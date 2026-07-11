@@ -83,10 +83,6 @@ export function Dashboard() {
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Live pattern dashboard</h1>
-          <p className="text-sm text-gray-400">
-            Suspected coordinated behavior patterns from public posts — configure keywords in{" "}
-            <code className="text-xs">config/ingestion-keywords.json</code>.
-          </p>
         </div>
         <div className="flex items-center gap-2 text-xs">
           <span
@@ -131,7 +127,7 @@ export function Dashboard() {
             <p className="text-gray-400">Loading...</p>
           ) : allPosts.length === 0 ? (
             <p className="text-gray-400">
-              No posts yet — the mock ingestion worker should populate data shortly.
+              No posts found yet. The ingestion worker should collect matching data shortly.
             </p>
           ) : (
             allPosts.slice(0, 30).map((post) => <PostCard key={post.id} post={post} />)

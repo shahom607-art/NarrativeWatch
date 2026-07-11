@@ -8,8 +8,8 @@ export function LandingPage() {
         <h1 className="text-4xl font-bold tracking-tight">NarrativeWatch</h1>
         <p className="text-lg leading-relaxed text-gray-300">
           A research and awareness tool for spotting suspected coordinated hate-speech and
-          inauthentic activity patterns online. Findings are suspected pattern matches, not
-          verified conclusions — built for understanding, not enforcement.
+          inauthentic activity patterns online. All findings are suspected pattern matches, not
+          verified conclusions. This tool is built for understanding, not enforcement.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <Link

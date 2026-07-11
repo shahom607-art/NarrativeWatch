@@ -52,7 +52,7 @@ export async function assignCluster(
   const cluster = await prisma.patternCluster.create({
     data: {
       label: `Repeated phrase pattern: "${snippet}${snippet.length >= 60 ? "…" : ""}"`,
-      narrative: `Suspected pattern match around keyword "${keyword}" — similar phrasing detected across multiple posts in a 24h window. This is automated analysis, not a verified conclusion.`,
+      narrative: `Potential pattern match around keyword "${keyword}". Similar phrasing was detected across multiple posts within a 24-hour period. This is automated analysis, not a verified conclusion.`,
       firstSeen: postedAt,
       lastSeen: postedAt,
       postCount: 1,

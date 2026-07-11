@@ -22,7 +22,7 @@ export function buildReportText(post: {
   botScore: number | null;
 }): string {
   return [
-    "Report context (user-submitted via NarrativeWatch — neutral summary):",
+    "Report context (neutral summary from NarrativeWatch):",
     "",
     `Post ID reference: ${post.externalId}`,
     `Author handle: @${post.authorHandle}`,

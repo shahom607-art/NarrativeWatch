@@ -16,7 +16,7 @@ export default async function AccountPage({ params }: { params: { handle: string
     <div className="space-y-6">
       <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
         This reflects automated pattern analysis, not a verified conclusion. Individual accounts
-        are shown only as aggregated context — never as confirmed bots or bad actors.
+        are shown only for aggregated context, not as confirmed bots or bad actors.
       </div>
 
       <div>

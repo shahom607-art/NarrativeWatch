@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "NarrativeWatch",
   description:
-    "Research dashboard for suspected coordinated inauthentic behavior patterns — awareness, not enforcement.",
+    "Research dashboard for suspected coordinated inauthentic behavior patterns. Designed for awareness, not enforcement.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

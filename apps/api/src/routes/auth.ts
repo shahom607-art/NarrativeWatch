@@ -30,7 +30,7 @@ router.post("/register", async (req, res) => {
   const existing = await prisma.user.findUnique({ where: { email: parsed.data.email } });
   if (existing) {
     if (!existing.passwordHash) {
-      res.status(409).json({ error: "This email is registered via Google — sign in with Google" });
+      res.status(409).json({ error: "This email is registered via Google. Please sign in with Google." });
       return;
     }
     res.status(409).json({ error: "Email already registered" });

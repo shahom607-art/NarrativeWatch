@@ -45,7 +45,7 @@ export function LiveStatsSnippet() {
         </div>
       )}
       <p className="mt-4 text-xs text-gray-500">
-        Pulled from the same aggregation pipeline as the research dashboard — updated on page load.
+        This data is retrieved from our aggregation pipeline and updates when the page is loaded.
       </p>
     </section>
   );
@@ -55,7 +55,7 @@ function StatCard({ label, value }: { label: string; value: number | null }) {
   return (
     <div className="space-y-1">
       <p className="text-3xl font-semibold tabular-nums text-accent">
-        {value === null ? "—" : value.toLocaleString()}
+        {value === null ? "N/A" : value.toLocaleString()}
       </p>
       <p className="text-sm text-gray-400">{label}</p>
     </div>

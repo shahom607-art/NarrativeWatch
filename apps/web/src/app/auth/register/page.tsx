@@ -32,7 +32,7 @@ export default function RegisterPage() {
       });
 
       if (result?.error) {
-        setError("Registered but sign-in failed — try logging in.");
+        setError("Account created, but sign-in failed. Please try logging in manually.");
         return;
       }
       router.push("/dashboard");

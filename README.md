@@ -4,6 +4,9 @@ A real-time analytics dashboard for detecting, clustering, and analyzing coordin
 
 Currently, NarrativeWatch implements real-time hate speech detection by subscribing directly to the public Bluesky Jetstream WebSocket firehose. The pipeline filters global public posts using a loose sliding-window keyword matcher, resolves matching text to OpenAI's Moderation API (`omni-moderation-latest`) to capture raw category confidence scores (specifically mapping `hate` and `harassment`), and computes a composite threat risk index. Classified insights are saved to PostgreSQL and instantly broadcasted to connected clients via Socket.io.
 
+### 📊 Ingestion Focus & Datasets
+For its primary analysis scope, the ingestion engine monitors public safety and toxic narrative markers using two main tracking lists: **antisemitism-related terms** (targeting historic tropes, conspiracy narratives, and dogwhistles) and **anti-India propaganda terms** (targeting xenophobic slurs, coordinated regional disinformation, and sectarian hostility).
+
 ## ✨ Features
 
 *   **Real-Time Firehose Ingestion**: Connects directly to the live Bluesky Jetstream firehose websocket, ingesting thousands of global public posts per minute with safety queues and reconnect handling.

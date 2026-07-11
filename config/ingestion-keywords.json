@@ -4,6 +4,7 @@
     {
       "id": "antisemitism-related",
       "label": "Antisemitism-related terms (broad collection net)",
+      "matchType": "loose",
       "keywords": [
         "jews control the world",
         "jews control media",
@@ -36,6 +37,7 @@
     {
       "id": "anti-india-propaganda",
       "label": "Anti-India propaganda terms (broad collection net)",
+      "matchType": "loose",
       "keywords": [
         "india is dirty",
         "filthy india",

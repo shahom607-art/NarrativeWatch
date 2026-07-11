@@ -68,7 +68,7 @@ export function Dashboard() {
     if (keyword) {
       merged = merged.filter(
         (p) =>
-          p.keywordMatched.includes(keyword) ||
+          p.keywordMatched.toLowerCase().includes(keyword.toLowerCase()) ||
           p.content.toLowerCase().includes(keyword.toLowerCase()),
       );
     }
@@ -117,7 +117,12 @@ export function Dashboard() {
         </div>
       </div>
 
-      <TrendChart posts={allPosts} keywords={activeChartKeywords} windowHours={windowHours} />
+      <TrendChart
+        posts={allPosts}
+        keywords={activeChartKeywords}
+        allKeywords={chartKeywords}
+        windowHours={windowHours}
+      />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-3 lg:col-span-2">

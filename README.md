@@ -1,73 +1,79 @@
 # 🕵️‍♂️ NarrativeWatch
 
-A real-time research and awareness dashboard for detecting, analyzing, and tracking suspected coordinated inauthentic behavior patterns on public social media posts.
+A real-time analytics dashboard for detecting, clustering, and analyzing coordinated narrative patterns and hate speech on public social media.
 
-### ✨ Features
+Currently, NarrativeWatch implements real-time hate speech detection by subscribing directly to the public Bluesky Jetstream WebSocket firehose. The pipeline filters global public posts using a loose sliding-window keyword matcher, resolves matching text to OpenAI's Moderation API (`omni-moderation-latest`) to capture raw category confidence scores (specifically mapping `hate` and `harassment`), and computes a composite threat risk index. Classified insights are saved to PostgreSQL and instantly broadcasted to connected clients via Socket.io.
 
-*   **Multi-Source Ingestion Engine**: Dynamically switches between synthetic mock data generation (for offline local testing) and live streaming from the Bluesky Jetstream WebSocket firehose, implementing client-side rate limits and backpressure queues.
-*   **Keyword-Based Filtering**: Targets specific research areas (such as antisemitism and disinformation narratives against India) via editable JSON keyword lists (`config/ingestion-keywords.json`).
-*   **Transparent Heuristic Scoring (Bot Score)**: Computes a composite 0–100 pattern-match score for incoming posts based on weighted factors: keyword posting frequency (30%), Jaccard & Cosine text similarity against recent posts (40%), account age/post count ratio (15%), and toxicity score contribution (15%).
-*   **Near-Duplicate Narrative Clustering**: Automatically groups posts with highly similar content into text clusters within a 24-hour window to map emerging, repetitive narrative campaigns.
-*   **Dual-Database Search Pipeline**: Indexes incoming posts to OpenSearch 2.x for advanced keyword, date, and score querying, with automatic fallback to relational PostgreSQL querying if the search service is offline.
-*   **Real-time Event Broadcasting**: Employs Socket.io namespaces scaled with a Redis adapter to instantly broadcast new posts and cluster updates to connected clients.
-*   **Personal Alerts & Watchlists**: Supports secure user registration, saved searches (alert triggers), and targeted handle tracking for focused monitoring.
-*   **Non-Enforcement Design**: Built for research and compliance. Never takes automated platform enforcement actions; instead, provides copy-to-clipboard neutral reporting text and redirects users to official platform safety channels.
-*   **Educational Media Literacy Portal**: Integrates reviewable draft resources directly into the user interface to help analysts evaluate pattern signals and verification steps.
+## ✨ Features
 
-### 🛠 Tech Stack
+*   **Real-Time Firehose Ingestion**: Connects directly to the live Bluesky Jetstream firehose websocket, ingesting thousands of global public posts per minute with safety queues and reconnect handling.
+*   **Optimized Sliding-Window Phrase Matcher**: Tokenizes posts, strips stop words, and matches target phrases loosely within a 15-word sliding window to capture paraphrased or reworded comments.
+*   **OpenAI Moderation Scoring**: Integrates OpenAI's moderation endpoint to retrieve multi-category confidence scores. The `hate` and `harassment` categories are combined (using the higher of the two) into a single 0-100 score.
+*   **Interactive Category Breakdown**: Displays raw categories and confidence scores inside a details disclosure element on the frontend to provide transparent analysis.
+*   **Coordinated Pattern Clustering**: Automatically groups posts with similar text content within a 24-hour window using Jaccard & Cosine similarity, helping identify coordinated copy-paste campaigns.
+*   **Dual-Database Search & Fallback**: Indexes posts into OpenSearch 2.x for advanced filters (keyword search, bot-score thresholds, date ranges) with a database fallback to PostgreSQL if OpenSearch is offline.
+*   **Socket-Based Live Updates**: Leverages Redis-scaled Socket.io namespaces to stream new posts and cluster updates instantly to client dashboards.
+*   **Compliance-Focused Report Flow**: Implements clipboard-based neutral report text generation and routes users directly to official platforms for manual review, avoiding automated platform enforcement.
 
-*   **Frontend**: Next.js 14 (App Router), React 18, Tailwind CSS, NextAuth.js, Recharts, Socket.io-client
-*   **API Service**: Express, TypeScript, Node.js, Socket.io, `@socket.io/redis-adapter`, Redis, Zod, JWT, bcryptjs
+---
+
+## 🛠 Tech Stack
+
+*   **Frontend**: Next.js 14 (App Router), React 18, NextAuth.js, Recharts, Socket.io-client, Tailwind CSS, PostCSS
+*   **API Service**: Node.js, Express, TypeScript, Socket.io, `@socket.io/redis-adapter`, Redis (ioredis), Zod, JSON Web Tokens (JWT), bcryptjs
 *   **Ingestion Worker**: BullMQ, tsx watch runner, ioredis
 *   **Database & Search**: PostgreSQL, Prisma ORM, OpenSearch 2.x (via `@opensearch-project/opensearch`)
 *   **Infrastructure**: Docker, Docker Compose
 
-### 🚀 Getting Started
+---
 
-#### Prerequisites
+## 🚀 Getting Started
+
+### Prerequisites
 *   Node.js (v20 or higher)
-*   Docker Desktop (for Postgres, Redis, and OpenSearch)
+*   Docker Desktop (running)
 
-#### Installation
-1.  **Configure Environment Variables**:
-    Copy the sample environment file to create your local `.env`:
+### Installation
+
+1.  **Configure Environment Variables**
+    Copy the sample environment file to create your local configurations:
     ```bash
     cp .env.example .env
     ```
-    Ensure the following environment variables are configured with your local or production values (never commit this file):
+    Configure the following variable names in your `.env` (never commit this file):
     *   `DATABASE_URL` — PostgreSQL connection string
     *   `REDIS_URL` — Redis connection string
     *   `OPENSEARCH_URL` — OpenSearch connection URL
-    *   `JWT_SECRET` — Session token signing secret
+    *   `JWT_SECRET` — Session signing token secret
     *   `NEXTAUTH_SECRET` — NextAuth encryption secret
-    *   `NEXTAUTH_URL` — Public URL of the frontend
+    *   `NEXTAUTH_URL` — Frontend dashboard public URL
     *   `GOOGLE_CLIENT_ID` — Google OAuth Client ID
     *   `GOOGLE_CLIENT_SECRET` — Google OAuth Client Secret
-    *   `OAUTH_SYNC_SECRET` — Shared secret for OAuth sync
-    *   `API_URL` / `NEXT_PUBLIC_API_URL` — Core API connection endpoints
-    *   `NEXT_PUBLIC_WS_URL` — WebSocket connection URL
-    *   `POST_SOURCE` — Data ingestion source (`mock` or `bluesky`)
-    *   `INGESTION_KEYWORDS_FILE` — Path to JSON keyword configuration file
-    *   `INGESTION_KEYWORDS` — Fallback list of tracking keywords
-    *   `INGESTION_INTERVAL_MS` — Worker polling frequency
-    *   `BLUESKY_JETSTREAM_HOST` — Public Bluesky Jetstream endpoint
-    *   `INGEST_BATCH_SIZE` / `INGEST_MAX_QUEUE_SIZE` / `INGEST_MAX_PER_SECOND` — Ingestion rate-limit rules
-    *   `PERSPECTIVE_API_KEY` — Google Perspective API key (optional)
+    *   `OAUTH_SYNC_SECRET` — Client-to-API synchronization secret
+    *   `API_URL` / `NEXT_PUBLIC_API_URL` — Backend API endpoints
+    *   `NEXT_PUBLIC_WS_URL` — Socket.io WebSocket connection URL
+    *   `POST_SOURCE` — Ingestion source selection (`mock` or `bluesky`)
+    *   `INGESTION_KEYWORDS_FILE` — JSON keyword tracking configurations path
+    *   `INGESTION_KEYWORDS` — Fallback tracking keywords list
+    *   `INGESTION_INTERVAL_MS` — Ingestion polling frequency
+    *   `BLUESKY_JETSTREAM_HOST` — Jetstream WebSocket public endpoint host
+    *   `INGEST_BATCH_SIZE` / `INGEST_MAX_QUEUE_SIZE` / `INGEST_MAX_PER_SECOND` — Ingestion rate limits
+    *   `OPENAI_API_KEY` — API Key for OpenAI Moderation model requests
 
-2.  **Start Services via Docker**:
-    Launch the Postgres, Redis, and OpenSearch containers:
+2.  **Spin Up Containerized Services**
+    Start containerized PostgreSQL, Redis, and OpenSearch services:
     ```bash
     npm run docker:up
     ```
 
-3.  **Install Project Dependencies**:
-    From the root directory, install workspace-wide dependencies:
+3.  **Install Workspace Dependencies**
+    Install all package manager dependencies at the monorepo root:
     ```bash
     npm install
     ```
 
-4.  **Sync Database Schema**:
-    Generate the Prisma Client and apply the database schema structure:
+4.  **Synchronize Database Schema**
+    Generate the Prisma Client and push the database schema layout:
     ```bash
     npm run db:generate
     ```
@@ -75,36 +81,41 @@ A real-time research and awareness dashboard for detecting, analyzing, and track
     npm run db:push
     ```
 
-5.  **Run Development Servers**:
-    Launch the Web frontend, API server, and Ingestion Worker concurrently:
+5.  **Run Locally**
+    Launch the API server, worker, and Next.js frontend concurrently in development mode:
     ```bash
     npm run dev
     ```
-    Access the frontend dashboard at `http://localhost:3000`.
+    Open `http://localhost:3000` to view the dashboard.
 
-### 📁 Project Structure
+---
+
+## 📁 Project Structure
 
 ```
 ├── apps/
-│   ├── api/          # Express REST API, Socket.io server, and OpenSearch query integration
-│   ├── web/          # Next.js 14 frontend dashboard, charts, and NextAuth integration
-│   └── worker/       # BullMQ ingestion worker pulling posts, scoring, clustering, and indexing
+│   ├── api/          # Express REST API & Socket.io events server
+│   ├── web/          # Next.js 14 dashboard UI, NextAuth client, and Recharts graph panels
+│   └── worker/       # Ingestion task worker managing scoring, clustering, and search indexing
 ├── packages/
-│   ├── database/     # Prisma schema, migrations, and PostgreSQL client configuration
-│   └── shared/       # Shared TypeScript definitions, scoring logic, and Jetstream/mock adapters
+│   ├── database/     # Database models schema (Prisma Client & PostgreSQL configurations)
+│   └── shared/       # Shared TypeScript models, sliding window matching, and OpenAI Moderation adapters
 ├── config/
-│   └── ingestion-keywords.json # JSON configuration for targeted ingestion keyword filters
-├── docker-compose.yml # Containerized services definition (PostgreSQL, Redis, OpenSearch)
-└── package.json       # Monorepo workspaces definition and concurrency scripts
+│   └── ingestion-keywords.json # Main JSON configurations tracking keywords list
+├── docker-compose.yml # Containers definition (PostgreSQL, Redis, OpenSearch)
+└── package.json       # Workspace scripts configuration
 ```
 
-### 🗺 Roadmap / Future Improvements
+---
 
-*   **Live Toxicity Integration (Phase 2)**: Replace the classifier stub with live Google Perspective API call mapping using `PERSPECTIVE_API_KEY` to calculate more accurate toxicity scores.
-*   **Alert Notifications**: Implement user alert rules that push webhook, email, or Slack notifications when specific keywords spike in volume or bot-score.
-*   **Vector-Embedding Clustering**: Transition from basic text/Jaccard similarity scoring to semantic vector-embedding clustering for identifying coordinated narratives across paraphrased content.
-*   **Advanced Analytics Export**: Allow researchers to export cluster data, post records, and trend graphs into CSV, JSON, and PDF formats for offline analysis and reporting.
+## 🗺 Roadmap / Future Improvements
 
-### 📄 License
+*   **Webhook & Notification Rules**: Enable users to register custom alert hooks pushing real-time alerts to Slack, Discord, or email when matched post volume spikes.
+*   **Vector-Embedding Semantic Similarity**: Move beyond token/Jaccard text matches to semantic vector embeddings, identifying coordinated behavior across highly paraphrased narratives.
+*   **Analytics Reports Export Engine**: Integrate PDF, CSV, and JSON download exports for pattern clusters, helping compliance researchers compile findings.
+
+---
+
+## 📄 License
 
 Distributed under the MIT License.

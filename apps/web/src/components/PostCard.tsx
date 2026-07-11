@@ -16,8 +16,13 @@ export function PostCard({ post }: { post: SourcePostDTO }) {
         <span className="rounded bg-border px-2 py-0.5 text-xs">{post.keywordMatched}</span>
         <span className="rounded bg-border/60 px-2 py-0.5 text-xs text-gray-400">{post.platform}</span>
         <span className={`ml-auto text-xs font-medium ${scoreColor(post.botScore)}`}>
-          {scoreLabel(post.botScore)}
+          Pattern match: {scoreLabel(post.botScore)}
         </span>
+        {post.toxicityScore != null && (
+          <span className={`text-xs font-medium ${scoreColor(post.toxicityScore)}`}>
+            Toxicity: {Math.round(post.toxicityScore)}/100
+          </span>
+        )}
       </div>
       <p className="mb-3 text-sm leading-relaxed">{post.content}</p>
       <div className="flex gap-3 text-xs">

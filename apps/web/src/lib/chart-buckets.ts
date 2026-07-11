@@ -1,9 +1,10 @@
 import type { SourcePostDTO } from "@narrativewatch/shared";
 
 export function bucketSizeMs(windowHours: number): number {
-  if (windowHours <= 1) return 300000; // 5 minutes
-  if (windowHours <= 24) return 3600000; // 1 hour
-  return 86400000; // 1 day
+  if (windowHours <= 1) return 5 * 60 * 1000; // 5 minutes
+  if (windowHours <= 24) return 1 * 60 * 60 * 1000; // 1 hour
+  if (windowHours <= 168) return 6 * 60 * 60 * 1000; // 6 hours
+  return 24 * 60 * 60 * 1000; // 1 day
 }
 
 /** Align a timestamp to the start of its bucket (epoch-aligned). */

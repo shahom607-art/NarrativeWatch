@@ -1,5 +1,6 @@
 import { prisma } from "@narrativewatch/database";
 import {
+  OpenAIToxicityClassifier,
   StubToxicityClassifier,
   computeBotScore,
   emitNewPost,
@@ -11,7 +12,9 @@ import {
 import { assignCluster } from "./clustering";
 import { indexPost } from "./opensearch";
 
-const toxicityClassifier = new StubToxicityClassifier();
+const toxicityClassifier = process.env.OPENAI_API_KEY
+  ? new OpenAIToxicityClassifier()
+  : new StubToxicityClassifier();
 
 function toDTO(post: {
   id: string;
@@ -24,6 +27,7 @@ function toDTO(post: {
   ingestedAt: Date;
   keywordMatched: string;
   toxicityScore: number | null;
+  toxicityBreakdown: unknown;
   botScore: number | null;
   botScoreBreakdown: unknown;
   clusterId: string | null;
@@ -39,6 +43,7 @@ function toDTO(post: {
     ingestedAt: post.ingestedAt.toISOString(),
     keywordMatched: post.keywordMatched,
     toxicityScore: post.toxicityScore,
+    toxicityBreakdown: post.toxicityBreakdown as Record<string, number> | null,
     botScore: post.botScore,
     botScoreBreakdown: post.botScoreBreakdown as SourcePostDTO["botScoreBreakdown"],
     clusterId: post.clusterId,
@@ -68,7 +73,10 @@ export async function processRawPosts(rawPosts: RawPost[]): Promise<number> {
     });
     if (exists) continue;
 
-    const toxicityScore = await toxicityClassifier.classify(raw.content);
+    const toxicityRes = await toxicityClassifier.classify(raw.content);
+    const toxicityScore = toxicityRes.score;
+    const toxicityBreakdown = toxicityRes.breakdown;
+
     const breakdown = computeBotScore({
       post: raw,
       recentPosts,
@@ -92,6 +100,7 @@ export async function processRawPosts(rawPosts: RawPost[]): Promise<number> {
         postedAt: raw.postedAt,
         keywordMatched: raw.keywordMatched,
         toxicityScore,
+        toxicityBreakdown: toxicityBreakdown as object,
         botScore: breakdown.total,
         botScoreBreakdown: breakdown as object,
         clusterId,

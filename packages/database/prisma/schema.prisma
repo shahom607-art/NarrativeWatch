@@ -47,6 +47,7 @@ model SourcePost {
   ingestedAt     DateTime        @default(now())
   keywordMatched String
   toxicityScore  Float?
+  toxicityBreakdown Json?
   botScore       Float?
   botScoreBreakdown Json?
   clusterId      String?

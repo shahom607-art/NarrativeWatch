@@ -8,6 +8,25 @@ import { apiFetch } from "@/lib/api";
 export function ReportViaXButton({ post }: { post: SourcePostDTO }) {
   const { data: session } = useSession();
 
+  if (post.platform === "bluesky") {
+    const rkey = post.externalId.startsWith("at://")
+      ? post.externalId.split("/").pop()
+      : null;
+    const blueskyUrl = rkey
+      ? `https://bsky.app/profile/${post.authorId}/post/${rkey}`
+      : `https://bsky.app/profile/${post.authorId}`;
+    return (
+      <a
+        href={blueskyUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="rounded border border-accent bg-accent/10 px-4 py-2 text-sm text-accent hover:bg-accent/20 transition inline-block text-center font-medium"
+      >
+        View on Bluesky
+      </a>
+    );
+  }
+
   if (post.platform !== "x") {
     return (
       <p className="text-xs text-gray-500">

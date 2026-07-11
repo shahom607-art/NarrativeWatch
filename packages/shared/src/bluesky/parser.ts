@@ -35,7 +35,7 @@ export function parsePostCommit(event: JetstreamEvent, ctx: BlueskyParseContext)
   if (!keywordMatched) return null;
 
   const did = event.did;
-  const handle = ctx.didToHandle.get(did) ?? did.slice(0, 20);
+  const handle = ctx.didToHandle.get(did) ?? did;
   const postedAt = record.createdAt ? new Date(record.createdAt) : new Date(event.time_us / 1000);
 
   if (Number.isNaN(postedAt.getTime())) return null;

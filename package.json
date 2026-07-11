@@ -6,7 +6,8 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently -n api,worker,web -c blue,green,magenta \"npm run dev -w @narrativewatch/api\" \"npm run dev -w @narrativewatch/worker\" \"npm run dev -w @narrativewatch/web\"",
+    "dev": "node scripts/start-dev.js",
+    "build": "npm run build --workspaces --if-present",
     "db:generate": "npm run generate -w @narrativewatch/database",
     "db:migrate": "npm run migrate -w @narrativewatch/database",
     "db:push": "npm run push -w @narrativewatch/database",

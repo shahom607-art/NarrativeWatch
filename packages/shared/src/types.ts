@@ -34,6 +34,7 @@ export interface SourcePostDTO {
   ingestedAt: string;
   keywordMatched: string;
   toxicityScore: number | null;
+  toxicityBreakdown: Record<string, number> | null;
   botScore: number | null;
   botScoreBreakdown: BotScoreBreakdown | null;
   clusterId: string | null;

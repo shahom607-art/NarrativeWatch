@@ -17,6 +17,7 @@ export function toPostDTO(post: SourcePost): SourcePostDTO {
     ingestedAt: post.ingestedAt.toISOString(),
     keywordMatched: post.keywordMatched,
     toxicityScore: post.toxicityScore,
+    toxicityBreakdown: post.toxicityBreakdown as Record<string, number> | null,
     botScore: post.botScore,
     botScoreBreakdown: post.botScoreBreakdown as BotScoreBreakdown | null,
     clusterId: post.clusterId,

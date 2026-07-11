@@ -23,11 +23,23 @@ export default async function AccountPage({ params }: { params: { handle: string
         <Link href="/dashboard" className="text-sm text-accent hover:underline">
           ← Back to dashboard
         </Link>
-        <h1 className="mt-2 text-2xl font-bold">@{account.handle}</h1>
-        <p className="mt-1 text-gray-400">
-          {account.postCount} flagged posts in corpus · avg pattern score{" "}
-          <span className={scoreColor(account.avgBotScore)}>{scoreLabel(account.avgBotScore)}</span>
-        </p>
+      <div className="flex items-center gap-3">
+        <h1 className="text-2xl font-bold">@{account.handle}</h1>
+        {account.handle.startsWith("did:") && (
+          <a
+            href={`https://bsky.app/profile/${account.handle}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-accent hover:underline"
+          >
+            View Profile on Bluesky ↗
+          </a>
+        )}
+      </div>
+      <p className="mt-1 text-gray-400">
+        {account.postCount} flagged posts in corpus · avg pattern score{" "}
+        <span className={scoreColor(account.avgBotScore)}>{scoreLabel(account.avgBotScore)}</span>
+      </p>
       </div>
 
       <section className="space-y-3">

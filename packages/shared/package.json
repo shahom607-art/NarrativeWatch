@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "ioredis": "^5.4.2",
+    "openai": "^6.46.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

@@ -90,7 +90,7 @@ export function computeBotScore(input: ScoreInput): BotScoreBreakdown {
   }
 
   const toxicityContribution =
-    toxicityScore != null ? Math.min(100, Math.round(toxicityScore * 100)) : 0;
+    toxicityScore != null ? Math.min(100, Math.round(toxicityScore)) : 0;
 
   const accountComponent = accountAgeRatio ?? 0;
   const total = Math.round(

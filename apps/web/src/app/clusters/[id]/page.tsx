@@ -28,6 +28,9 @@ export default async function ClusterPage({ params }: { params: { id: string } }
           First seen {formatDate(cluster.firstSeen)} · Last seen {formatDate(cluster.lastSeen)} ·{" "}
           {cluster.postCount} posts (suspected pattern match)
         </p>
+        <div className="mt-4 rounded bg-accent/10 border border-accent/20 p-3 text-xs text-gray-300">
+          <strong>ℹ️ Routing Signal Notice:</strong> Keyword matches are used purely as a routing net to collect posts. A match does not imply the content is toxic or represents coordinated behavior. Please refer to the Toxicity Score and Pattern Match (Bot) Score for actual content analysis.
+        </div>
       </div>
 
       {samplePost && (

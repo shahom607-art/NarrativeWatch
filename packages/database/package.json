@@ -8,7 +8,7 @@
     "generate": "dotenv -e ../../.env -- prisma generate",
     "migrate": "dotenv -e ../../.env -- prisma migrate dev",
     "push": "dotenv -e ../../.env -- prisma db push",
-    "build": "tsc"
+    "build": "prisma generate && tsc"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1"

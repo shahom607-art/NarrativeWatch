@@ -5,6 +5,7 @@ import {
   buildJetstreamSubscribeUrl,
   DEFAULT_JETSTREAM_HOST,
   type JetstreamEvent,
+  blueskyExternalId,
 } from "./bluesky/jetstream";
 import { parseJetstreamMessage } from "./bluesky/parser";
 
@@ -31,6 +32,7 @@ export class BlueskyPostSource implements PostSource {
   private readonly reconnectDelayMs: number;
   private readonly limiter: IngestRateLimiter<RawPost>;
   private readonly didToHandle = new Map<string, string>();
+  private deleteCallback?: (externalId: string) => void;
 
   private ws: WebSocket | null = null;
   private lastCursorUs: number | undefined;
@@ -59,6 +61,10 @@ export class BlueskyPostSource implements PostSource {
 
   getQueueDepth(): number {
     return this.limiter.pending;
+  }
+
+  onDelete(callback: (externalId: string) => void): void {
+    this.deleteCallback = callback;
   }
 
   stop(): void {
@@ -121,6 +127,19 @@ export class BlueskyPostSource implements PostSource {
 
     if (event.time_us) {
       this.lastCursorUs = event.time_us;
+    }
+
+    if (
+      event.kind === "commit" &&
+      event.commit &&
+      event.commit.operation === "delete" &&
+      event.commit.collection === "app.bsky.feed.post" &&
+      event.commit.rkey
+    ) {
+      if (this.deleteCallback) {
+        const extId = blueskyExternalId(event.did, event.commit.rkey);
+        this.deleteCallback(extId);
+      }
     }
 
     const post = parseJetstreamMessage(raw, {

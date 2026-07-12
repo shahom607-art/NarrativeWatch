@@ -100,4 +100,10 @@ export class MockPostSource implements PostSource {
 
     return posts;
   }
+
+  onDelete(callback: (externalId: string) => void): void {}
+
+  getQueueDepth(): number {
+    return 0;
+  }
 }

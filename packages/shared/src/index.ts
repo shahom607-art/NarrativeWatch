@@ -7,3 +7,6 @@ export * from "./toxicity";
 export * from "./scoring";
 export * from "./events";
 export * from "./bluesky/jetstream";
+export { MastodonPostSource, MastodonPostSourceOptions } from "./mastodon-post-source";
+export { CompositePostSource } from "./composite-post-source";
+export { YouTubePostSource, YouTubePostSourceOptions } from "./youtube-post-source";

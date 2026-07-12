@@ -112,11 +112,13 @@ export function TrendChart({ posts, keywords, allKeywords = [], windowHours }: T
           <div>
             <h3 className="text-sm font-medium text-gray-400">Post volume over time</h3>
             <p className="text-xs text-gray-500 mt-0.5">
-              {isDashboardFiltered
-                ? `Filtering by dashboard search keyword`
-                : pinnedKeywords.length > 0
-                  ? `Showing ${activeKeywords.length} pinned keyword(s)`
-                  : `Showing top ${activeKeywords.length} keywords by post volume`}
+              {allKeywords.length === 0
+                ? "Loading keywords..."
+                : isDashboardFiltered
+                  ? `Filtering by dashboard search keyword`
+                  : pinnedKeywords.length > 0
+                    ? `Showing ${activeKeywords.length} pinned keyword(s)`
+                    : `Showing top ${activeKeywords.length} keywords by post volume`}
             </p>
           </div>
           {!isDashboardFiltered && pinnedKeywords.length > 0 && (
@@ -176,34 +178,44 @@ export function TrendChart({ posts, keywords, allKeywords = [], windowHours }: T
             className="w-full rounded border border-border bg-background px-2.5 py-1.5 text-xs text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
           />
           <div className="flex-1 overflow-y-auto max-h-48 lg:max-h-60 pr-1 space-y-1">
-            {filteredKeywordsList.map((kw) => {
-              const isPinned = pinnedKeywords.includes(kw);
-              const isMaxReached = pinnedKeywords.length >= 7;
-              const isDisabled = !isPinned && isMaxReached;
-              const count = keywordVolumes[kw] ?? 0;
-              return (
-                <label
-                  key={kw}
-                  className={`flex items-center justify-between rounded px-2 py-1.5 text-xs cursor-pointer select-none transition-colors ${
-                    isPinned
-                      ? "bg-blue-500/10 text-blue-400 font-medium"
-                      : "hover:bg-background text-gray-300"
-                  } ${isDisabled ? "opacity-40 cursor-not-allowed" : ""}`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <input
-                      type="checkbox"
-                      checked={isPinned}
-                      disabled={isDisabled}
-                      onChange={() => handleToggleKeyword(kw)}
-                      className="rounded border-border bg-background text-blue-500 focus:ring-blue-500 cursor-pointer disabled:cursor-not-allowed"
-                    />
-                    <span className="truncate" title={kw}>{kw}</span>
-                  </div>
-                  <span className="text-[10px] text-gray-500 font-mono pl-2">({count})</span>
-                </label>
-              );
-            })}
+            {allKeywords.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-xs text-gray-500 py-6">
+                Loading keywords...
+              </div>
+            ) : filteredKeywordsList.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-xs text-gray-500 py-6">
+                No matching keywords
+              </div>
+            ) : (
+              filteredKeywordsList.map((kw) => {
+                const isPinned = pinnedKeywords.includes(kw);
+                const isMaxReached = pinnedKeywords.length >= 7;
+                const isDisabled = !isPinned && isMaxReached;
+                const count = keywordVolumes[kw] ?? 0;
+                return (
+                  <label
+                    key={kw}
+                    className={`flex items-center justify-between rounded px-2 py-1.5 text-xs cursor-pointer select-none transition-colors ${
+                      isPinned
+                        ? "bg-blue-500/10 text-blue-400 font-medium"
+                        : "hover:bg-background text-gray-300"
+                    } ${isDisabled ? "opacity-40 cursor-not-allowed" : ""}`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={isPinned}
+                        disabled={isDisabled}
+                        onChange={() => handleToggleKeyword(kw)}
+                        className="rounded border-border bg-background text-blue-500 focus:ring-blue-500 cursor-pointer disabled:cursor-not-allowed"
+                      />
+                      <span className="truncate" title={kw}>{kw}</span>
+                    </div>
+                    <span className="text-[10px] text-gray-500 font-mono pl-2">({count})</span>
+                  </label>
+                );
+              })
+            )}
           </div>
         </div>
       )}

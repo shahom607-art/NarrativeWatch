@@ -8,10 +8,14 @@ export interface RawPost {
   keywordMatched: string;
   accountCreatedAt?: Date | null;
   accountPostCount?: number | null;
+  youtubeVideoId?: string | null;
+  youtubeVideoTitle?: string | null;
 }
 
 export interface PostSource {
   fetchRecent(keywords: string[], sinceId?: string): Promise<RawPost[]>;
+  onDelete?(callback: (externalId: string) => void): void;
+  getQueueDepth?(): number;
 }
 
 export interface BotScoreBreakdown {
@@ -38,6 +42,8 @@ export interface SourcePostDTO {
   botScore: number | null;
   botScoreBreakdown: BotScoreBreakdown | null;
   clusterId: string | null;
+  youtubeVideoId?: string | null;
+  youtubeVideoTitle?: string | null;
 }
 
 export interface PatternClusterDTO {

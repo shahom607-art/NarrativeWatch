@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 
 export function NavBar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   return (
     <header className="border-b border-border bg-card">
@@ -13,7 +13,7 @@ export function NavBar() {
           NarrativeWatch
         </Link>
         <nav className="flex items-center gap-4 text-sm">
-          {session && (
+          {status !== "loading" && session && (
             <Link href="/dashboard" className="hover:text-accent">
               Dashboard
             </Link>
@@ -21,7 +21,9 @@ export function NavBar() {
           <Link href="/education" className="hover:text-accent">
             Education
           </Link>
-          {session ? (
+          {status === "loading" ? (
+            <div className="h-8 w-24 animate-pulse rounded bg-border/20" />
+          ) : session ? (
             <>
               <Link href="/account/settings" className="hover:text-accent">
                 Settings

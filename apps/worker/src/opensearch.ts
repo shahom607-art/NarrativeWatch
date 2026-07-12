@@ -55,3 +55,12 @@ export async function indexPost(post: SourcePostDTO): Promise<void> {
     refresh: true,
   });
 }
+
+export async function deletePostFromIndex(id: string): Promise<void> {
+  const os = getClient();
+  await os.delete({
+    index: INDEX_NAME,
+    id,
+    refresh: true,
+  });
+}

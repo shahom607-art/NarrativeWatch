@@ -1,10 +1,9 @@
 import "./env";
 import { Queue, Worker } from "bullmq";
 import IORedis from "ioredis";
-import { BlueskyPostSource } from "@narrativewatch/shared";
 import { ensurePostsIndex } from "./opensearch";
 import { createPostSource, loadKeywordsForIngestion, resolvePostSourceKind } from "./create-post-source";
-import { processRawPosts } from "./process-posts";
+import { processRawPosts, handleDeletedPost } from "./process-posts";
 
 const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 const KEYWORDS = loadKeywordsForIngestion();
@@ -26,13 +25,17 @@ async function runIngestion(): Promise<void> {
     console.log(`[worker] Processed ${processed} post(s) from ${POST_SOURCE} source`);
   }
 
-  if (postSource instanceof BlueskyPostSource && postSource.getQueueDepth() > 0) {
-    console.log(`[worker] Bluesky queue depth: ${postSource.getQueueDepth()} pending (rate-limited)`);
+  if (typeof (postSource as any).getQueueDepth === "function") {
+    const depth = (postSource as any).getQueueDepth();
+    if (depth > 0) {
+      console.log(`[worker] Ingestion queue depth: ${depth} pending (rate-limited)`);
+    }
   }
 }
 
 async function scheduleIngestion(): Promise<void> {
-  const pollMs = POST_SOURCE === "bluesky" ? Math.min(INTERVAL_MS, 3000) : INTERVAL_MS;
+  const hasStreaming = POST_SOURCE.includes("bluesky") || POST_SOURCE.includes("mastodon");
+  const pollMs = hasStreaming ? Math.min(INTERVAL_MS, 3000) : INTERVAL_MS;
 
   await ingestQueue.add(
     "fetch",
@@ -62,20 +65,27 @@ async function main() {
     console.error("Ingestion job failed:", err);
   });
 
+  if (typeof (postSource as any).onDelete === "function") {
+    (postSource as any).onDelete(async (externalId: string) => {
+      await handleDeletedPost(externalId);
+    });
+  }
+
   process.on("SIGINT", () => {
-    if (postSource instanceof BlueskyPostSource) postSource.stop();
+    if (typeof (postSource as any).stop === "function") (postSource as any).stop();
     process.exit(0);
   });
 
   process.on("SIGTERM", () => {
-    if (postSource instanceof BlueskyPostSource) postSource.stop();
+    if (typeof (postSource as any).stop === "function") (postSource as any).stop();
     process.exit(0);
   });
 
   await scheduleIngestion();
   await ingestQueue.add("fetch-initial", {}, { removeOnComplete: true });
 
-  const pollMs = POST_SOURCE === "bluesky" ? Math.min(INTERVAL_MS, 3000) : INTERVAL_MS;
+  const hasStreaming = POST_SOURCE.includes("bluesky") || POST_SOURCE.includes("mastodon");
+  const pollMs = hasStreaming ? Math.min(INTERVAL_MS, 3000) : INTERVAL_MS;
   console.log(`Ingestion scheduled every ${pollMs}ms`);
 }
 

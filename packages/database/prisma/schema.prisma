@@ -52,6 +52,8 @@ model SourcePost {
   botScoreBreakdown Json?
   clusterId      String?
   cluster        PatternCluster? @relation(fields: [clusterId], references: [id])
+  youtubeVideoId   String?
+  youtubeVideoTitle String?
 
   @@index([keywordMatched])
   @@index([postedAt])
@@ -77,4 +79,17 @@ model ReportLog {
   postId     String
   reportedAt DateTime @default(now())
   channel    String
+}
+
+model YoutubeVideo {
+  id           String    @id
+  title        String
+  publishedAt  DateTime
+  discoveredAt DateTime  @default(now())
+  lastPolledAt DateTime?
+}
+
+model YoutubeQuota {
+  date       String @id // YYYY-MM-DD format (Pacific Time)
+  unitsSpent Int    @default(0)
 }

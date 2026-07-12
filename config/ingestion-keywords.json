@@ -31,7 +31,16 @@
         "zionist genocide",
         "israel behind every war",
         "zionist dictator",
-        "jews control weather"
+        "jews control weather",
+        "synagogue of satan",
+        "jewish supremacy",
+        "jews behind 9/11",
+        "jewish ritual murder",
+        "zionist puppet",
+        "protocols of zion",
+        "jewish media cartel",
+        "zionist hegemony",
+        "jewish power"
       ]
     },
     {
@@ -55,7 +64,29 @@
         "indian scammer",
         "hindu nazi",
         "hindu genocide supporters",
-        "indian occupied kashmir"
+        "indian occupied kashmir",
+        "cow urine drinkers",
+        "street defecating indians",
+        "pajeet scammer",
+        "rape capital india",
+        "cow piss drinkers",
+        "hindutva terrorism",
+        "fascist modi regime",
+        "khalistan zindabad",
+        "india terrorist state"
+      ]
+    },
+    {
+      "id": "broad-collection-net",
+      "label": "Broad Ingestion collection net (for toxicity classification)",
+      "matchType": "loose",
+      "keywords": [
+        "Israel",
+        "Zionist",
+        "India",
+        "Hindu",
+        "Judaism",
+        "jews"
       ]
     }
   ]

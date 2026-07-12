@@ -21,16 +21,20 @@ export function Dashboard() {
   const [initialPosts, setInitialPosts] = useState<SourcePostDTO[]>([]);
   const [clusters, setClusters] = useState<PatternClusterDTO[]>([]);
   const [loading, setLoading] = useState(true);
-  const [chartKeywords, setChartKeywords] = useState<string[]>(FALLBACK_KEYWORDS);
+  const [chartKeywords, setChartKeywords] = useState<string[]>([]);
   const { posts: livePosts, clusterUpdates, connected } = useLiveFeed();
 
   useEffect(() => {
     getIngestionKeywords()
       .then((res) => {
-        if (res.keywords.length > 0) setChartKeywords(res.keywords);
+        if (res.keywords && res.keywords.length > 0) {
+          setChartKeywords(res.keywords);
+        } else {
+          setChartKeywords(FALLBACK_KEYWORDS);
+        }
       })
       .catch(() => {
-        // keep fallback
+        setChartKeywords(FALLBACK_KEYWORDS);
       });
   }, []);
 

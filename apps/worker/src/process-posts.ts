@@ -10,7 +10,7 @@ import {
   type SourcePostDTO,
 } from "@narrativewatch/shared";
 import { assignCluster } from "./clustering";
-import { indexPost } from "./opensearch";
+import { indexPost, deletePostFromIndex } from "./opensearch";
 
 const toxicityClassifier = process.env.OPENAI_API_KEY
   ? new OpenAIToxicityClassifier()
@@ -31,6 +31,8 @@ function toDTO(post: {
   botScore: number | null;
   botScoreBreakdown: unknown;
   clusterId: string | null;
+  youtubeVideoId: string | null;
+  youtubeVideoTitle: string | null;
 }): SourcePostDTO {
   return {
     id: post.id,
@@ -47,6 +49,8 @@ function toDTO(post: {
     botScore: post.botScore,
     botScoreBreakdown: post.botScoreBreakdown as SourcePostDTO["botScoreBreakdown"],
     clusterId: post.clusterId,
+    youtubeVideoId: post.youtubeVideoId,
+    youtubeVideoTitle: post.youtubeVideoTitle,
   };
 }
 
@@ -104,6 +108,8 @@ export async function processRawPosts(rawPosts: RawPost[]): Promise<number> {
         botScore: breakdown.total,
         botScoreBreakdown: breakdown as object,
         clusterId,
+        youtubeVideoId: raw.youtubeVideoId,
+        youtubeVideoTitle: raw.youtubeVideoTitle,
       },
     });
 
@@ -140,3 +146,73 @@ export async function processRawPosts(rawPosts: RawPost[]): Promise<number> {
 
   return processed;
 }
+
+export async function handleDeletedPost(externalId: string): Promise<void> {
+  const post = await prisma.sourcePost.findUnique({
+    where: { externalId },
+    select: { id: true, clusterId: true, platform: true },
+  });
+
+  if (!post) {
+    return;
+  }
+
+  console.log(`[worker] Received delete event for post: ${externalId} (platform: ${post.platform})`);
+
+  try {
+    await deletePostFromIndex(post.id);
+    console.log(`[worker] Removed post ${post.id} (${externalId}) from OpenSearch`);
+  } catch (err) {
+    console.warn(`[worker] Failed to delete post ${post.id} from OpenSearch:`, err);
+  }
+
+  try {
+    const deletedLogs = await prisma.reportLog.deleteMany({
+      where: { postId: post.id }
+    });
+    if (deletedLogs.count > 0) {
+      console.log(`[worker] Purged ${deletedLogs.count} ReportLog(s) referencing post ${post.id}`);
+    }
+  } catch (err) {
+    console.warn(`[worker] Failed to delete ReportLogs for post ${post.id}:`, err);
+  }
+
+  await prisma.sourcePost.delete({
+    where: { id: post.id },
+  });
+  console.log(`[worker] Purged post ${post.id} (${externalId}) from PostgreSQL`);
+
+  if (post.clusterId) {
+    const cluster = await prisma.patternCluster.findUnique({
+      where: { id: post.clusterId },
+      select: { id: true, postCount: true, label: true, narrative: true, firstSeen: true, lastSeen: true },
+    });
+
+    if (cluster) {
+      const newCount = cluster.postCount - 1;
+      if (newCount <= 0) {
+        await prisma.patternCluster.delete({
+          where: { id: cluster.id },
+        });
+        console.log(`[worker] Deleted pattern cluster ${cluster.id} (drops to 0 members)`);
+      } else {
+        const updated = await prisma.patternCluster.update({
+          where: { id: cluster.id },
+          data: { postCount: newCount },
+        });
+        console.log(`[worker] Decremented pattern cluster ${cluster.id} count to ${newCount}`);
+        if (updated.postCount % CLUSTER_UPDATE_THRESHOLD === 0) {
+          await emitClusterUpdate({
+            id: updated.id,
+            label: updated.label,
+            narrative: updated.narrative,
+            firstSeen: updated.firstSeen.toISOString(),
+            lastSeen: updated.lastSeen.toISOString(),
+            postCount: updated.postCount,
+          });
+        }
+      }
+    }
+  }
+}
+

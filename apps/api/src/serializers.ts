@@ -21,6 +21,8 @@ export function toPostDTO(post: SourcePost): SourcePostDTO {
     botScore: post.botScore,
     botScoreBreakdown: post.botScoreBreakdown as BotScoreBreakdown | null,
     clusterId: post.clusterId,
+    youtubeVideoId: post.youtubeVideoId,
+    youtubeVideoTitle: post.youtubeVideoTitle,
   };
 }
 

@@ -27,6 +27,42 @@ export function ReportViaXButton({ post }: { post: SourcePostDTO }) {
     );
   }
 
+  if (post.platform === "youtube") {
+    const youtubeUrl = post.youtubeVideoId
+      ? `https://www.youtube.com/watch?v=${post.youtubeVideoId}&lc=${post.externalId}`
+      : `https://www.youtube.com/`;
+    return (
+      <a
+        href={youtubeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="rounded border border-accent bg-accent/10 px-4 py-2 text-sm text-accent hover:bg-accent/20 transition inline-block text-center font-medium"
+      >
+        View on YouTube
+      </a>
+    );
+  }
+
+  if (post.platform === "mastodon") {
+    // Mastodon social uses the pattern: instance/web/@authorHandle/statusId
+    // or externalId direct URL representation if fully qualified.
+    // If not, we fall back to general social format.
+    const hasHttp = post.externalId.startsWith("http://") || post.externalId.startsWith("https://");
+    const mastodonUrl = hasHttp
+      ? post.externalId
+      : `https://mastodon.social/@${post.authorHandle}/${post.externalId}`;
+    return (
+      <a
+        href={mastodonUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="rounded border border-accent bg-accent/10 px-4 py-2 text-sm text-accent hover:bg-accent/20 transition inline-block text-center font-medium"
+      >
+        View on Mastodon
+      </a>
+    );
+  }
+
   if (post.platform !== "x") {
     return (
       <p className="text-xs text-gray-500">

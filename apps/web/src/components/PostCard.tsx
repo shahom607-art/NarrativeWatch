@@ -25,6 +25,19 @@ export function PostCard({ post }: { post: SourcePostDTO }) {
         )}
       </div>
       <p className="mb-3 text-sm leading-relaxed">{post.content}</p>
+      {post.platform === "youtube" && post.youtubeVideoId && (
+        <div className="mb-3 text-xs text-gray-400">
+          Commented on video:{" "}
+          <a
+            href={`https://www.youtube.com/watch?v=${post.youtubeVideoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline font-medium"
+          >
+            {post.youtubeVideoTitle || post.youtubeVideoId}
+          </a>
+        </div>
+      )}
       <div className="flex gap-3 text-xs">
         <Link href={`/post/${post.id}`} className="text-accent hover:underline">
           View details

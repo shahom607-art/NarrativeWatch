@@ -125,6 +125,18 @@ A real-time, hybrid analytics dashboard for detecting, clustering, and analyzing
 
 ---
 
+## 🎯 Keyword Ingestion Engine
+
+Currently, the ingestion pipeline is configured to monitor a curated set of 43 targeted keywords focusing on **antisemitism** and **anti-Indian** propaganda campaigns. This precise selection allows the system to filter massive public social media streams and extract posts with high relevance to extremist and toxic speech. By routing these specific data points directly into the classifier and clustering models, the system ensures high efficiency and high-fidelity mapping of narrative trends.
+
+---
+
+## 🏆 Project Outcomes & Achievements
+
+This project delivers an incredibly beneficial tool for real-time narrative analysis and platform safety. Through the integration of Bluesky, Mastodon, and YouTube comment ingestion pipelines, a comprehensive cross-platform monitoring solution has been successfully established. The addition of quota-aware budget safeguards ensures high availability without risking API exhaustion or excessive billing. Furthermore, the implementation of automated Jaccard coordinate clustering and OpenAI Moderation endpoints enables accurate mapping of botnets and scoring of hate speech severity at scale. Combining these robust features with an OpenSearch database fail-safe guarantees researchers and analysts a reliable, zero-latency dashboard. Ultimately, raw and scattered social data is transformed into a unified, actionable platform for combating online hate and coordinated propaganda.
+
+---
+
 ## 📄 License
 
 Distributed under the MIT License.
